@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Using a Hidden Markov Model</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<HR>
+<H1>Exercise: Using a Hidden Markov Model</H1>
+<HR>
+
+<P>
+<strong>Description:</strong>
+In this exercise, we use a hidden Markov model (HMM) as a model of word
+generation from part-of-speech sequences. We will: 
+
+<UL>
+<LI>Train an HMM on a sample of English-like text 
+<LI>Inspect the resulting model 
+<LI>Generate sentences at random from the model 
+<LI>Create test sentences and find the most likely hidden state sequence
+</UL>
+
+<P> <strong>Credits:</strong> The <A
+HREF="http://www.cfar.umd.edu/~kanungo/software/software.html"> HMM
+package</A> we are using in this exercise was written by <A
+HREF="http://www.cfar.umd.edu/~kanungo/">Tapas Kanungo</A>, and this
+exercise, the accompanying scripts, etc. were written by by <A
+HREF="http://umiacs.umd.edu/~resnik/">Philip Resnik</A>.  Note that
+the version of the HMM package included with this exercise (see
+"Getting the Code", below) includes <strong>only</strong> Solaris
+executables, not <A
+HREF="http://www.cfar.umd.edu/~kanungo/software/software.html">the
+complete HMM source code.</A>
+<P>
+
+<strong>Prerequisites:</strong> This exercise assumes basic
+familiarity with typical Unix commands, and the ability to create text
+files (e.g. using a text editor such as <em>vi</em> or
+<em>emacs</em>). No programming is required.  <P>
+
+<strong>Notational Convention:</strong> The symbols &lt;== will be used to
+identify a comment from the instructor, on lines where you're typing
+something in. So, for example, in
+
+  <PRE>    
+    %  cp file1.txt file2.txt   <== The "cp" is short for "copy"
+  </PRE>
+
+<P>what you're supposed to type at the prompt (identified by the percent
+sign, here) is 
+
+  <PRE>
+    cp file1.txt file2.txt
+  </PRE>
+followed by a carriage return.
+<P>
+<HR>
+
+<H2>Getting Logged In and Getting the Code</H2>
+
+<OL>
+<LI> For this lab, you will use a Solaris machine.
+<PRE>
+  % mkdir hmm                 <== Create a subdirectory called "hmm"
+  % cd hmm                    <== Go into that directory
+  % ftp umiacs.umd.edu        <== Invoke the "ftp" program
+
+  Name (yourname): anonymous  <==   Type "anonymous" (without quotes)
+  Password: name@address      <==   Type your e-mail address
+
+  ftp> cd pub/resnik/723      <==   Go to directory pub/resnik/723
+  ftp> binary                 <==   Tell ftp to use binary transfer mode
+  ftp> get hmm.tar            <==   Download the file containing the code
+  ftp> bye                    <==   Exit from ftp
+
+  % tar xvf hmm.tar           <== Extract code from the file
+  % rm hmm.tar                <== Delete the file (to conserve space)
+
+  % chmod u+x *.pl            <== Make perl programs executable
+</PRE>
+If you cannot run the Perl scripts (the files that have a .pl suffix), you probably have Perl installed at a different path than we do. You can fix this by using pickperl script. First find out the path for Perl that you are using, and then run pickperl as follows:
+
+<pre>
+  % pickperl /usr/imports/bin/perl /your/perl/path/perl  <== get correct perl
+</pre>
+<P>
+
+<LI>Now go into directory example0: 
+
+  <PRE>    
+    %  cd example0
+  </PRE>
+
+<LI>Run <STRONG>link</STRONG> to make the HMM programs available for
+    running in this directory:
+
+  <PRE>
+    %  link 
+  </PRE>
+
+</OL>
+<P>
+<HR>
+
+<H2>Creating the Training Data</H2>
+
+<OL>
+
+<LI>Look at file example0.train, which contains a very small corpus generated
+using a very simple English-like grammar. 
+
+  <PRE>    
+    %  more example0.train 
+  </PRE>
+
+Alternatively, open the file in an editor.  What parts of speech would
+you say are represented in this file? Write down a list of parts of
+speech and the words you think belong to each one.  Notice that the
+same word can appear in multiple parts of speech. Include your answer
+in your report.
+<P>
+
+
+<LI>Turn example0.train into training input for the HMM code, by
+running the <STRONG>create_key.pl</STRONG> program. This reads in the
+training file and converts each unique word into a unique number,
+since the HMM program uses numbers rather than symbols. For example,
+"the tall man saw the short man" might be translated into the sequence
+"1 2 3 4 1 5 3".
+
+  <PRE>
+    %  create_key.pl example0.key < example0.train > example0.seq
+  </PRE>
+
+Feel free to look at file example0.key, which now contains the mapping
+from words to their corresponding numbers, and at file example0.seq,
+which now contains the training input represented as numbers rather
+than words.  The "T=" value at the top of example0.seq tells you how
+many symbols there are in the training sequence.  (In this case the
+number should be 590.)
+</OL>
+<P>
+
+<HR>
+<H2>Training the HMM</H2>
+
+<OL>
+<LI> To train the model we will use the <strong>esthmm</strong> program.
+This program needs to know the number of symbols in the alphabet of
+the HMM (that is, symbols that can be emitted); you can obtain this by
+typing 
+  <PRE>
+    %  wc -l example0.key
+  </PRE>
+In this case the number of symbols is 13.  The number of states is
+something you can choose.  Recall that for a HMM-based part-of-speech
+model like this one, each state corresponds to a part of speech
+(i.e. a syntactic category like noun, verb, etc.), so the number of
+states to choose corresponds to the number of parts of speech you
+believe are represented in the corpus.  In this case, let's use 6
+states.  We run the <strong>esthmm</strong> program as follows:
+  <PRE>
+    %  esthmm 6 13 example0.seq > example0.hmm
+  </PRE>
+This creates file example0.hmm, which contains the trained model.
+Depending on the computer you're running this on, this might take 
+a minute.
+<P>
+
+<LI> If you'd like, look at file example0.hmm -- it's not the easiest
+thing in the world to read, but you can see how the model is
+represented there.  At the top are specified the number of states and
+the number of symbols (M=13 symbols, N=6 states).  Then you have the
+complete A matrix, i.e. the 6-by-6 transition probability matrix.
+Next you have the 6-by-13 emission probability matrix, B.  Finally you
+have the pi vector, giving initial probabilities for the 6 states.
+<P>
+</OL>
+
+<HR>
+<H2>Inspecting the Model</H2>
+
+<OL>
+<LI> To view the model you've just created a bit more readably,
+keeping only the most useful information, run the
+<strong>viewhmm.pl</strong> program.  This shows the state-to-state
+transition probabilities when they are above a certain threshold
+probability, since very low transition probabilities probably don't
+tell you much about the structure of the model.  Similarly, for the
+emission probabilities, it shows only the symbols emitted with a
+sufficiently high probability.  (And it shows them as words, not
+numbers, for easier readability.)  Run <strong>viewhmm.pl</strong> as
+follows:
+  <PRE>
+    %  viewhmm.pl example0.hmm example0.key 0.01 0.01 
+  </PRE>
+Chances are it scrolls by too fast, you you may want to do this
+instead:
+  <PRE>
+    %  viewhmm.pl example0.hmm example0.key 0.01 0.01 | more
+  </PRE>
+Or, you might want to save the output to a file:
+  <PRE>
+    %  viewhmm.pl example0.hmm example0.key 0.01 0.01 > example0.view
+  </PRE>
+<P>
+
+<LI> Based on what you see when you run <strong>viewhmm.pl</strong>,
+draw, on paper, a transition diagram for this HMM.  That is, write
+each state as a node labeled by the state number, and write
+probabilities on the arcs from state to state. Include the transition
+diagram in your report.
+<P>
+
+<LI> Now, based on what you see when you run
+<strong>viewhmm.pl</strong>, label each state in your transition
+diagram with a part of speech.  How good a match is there between your
+intuitions, earlier, and the way the model has automatically decided
+which are the high-probability symbols for each state?  If there are
+mismatches, are they linguistically interesting? Include all your answers
+in your report.
+<P>
+</OL>
+
+<HR>
+<H2>Generating Sentences at Random from the Model</H2>
+
+<OL>
+<LI>  Using your transition diagram and the output of
+<strong>viewhmm.pl</strong>, start at the the most likely start state,
+and write down the most likely symbol to be emitted there.  (Break
+ties at random.)  Then follow the most likely arc to the next state,
+and write down the most likely symbol to be emitted <em>there</em>.
+Continue in this fashion until you emit a punctuation mark, or until
+you get bored. Include the sentence you generate in your report.
+<P>
+
+<LI> Now we'll have the computer do this same process.  Since it
+doesn't ever get bored, we'll have to tell it how many symbols to emit
+before it stops -- say, 100.  To do this, run the
+<strong>genseq</strong> program:
+  <PRE>
+    %  genseq example0.hmm 100
+  </PRE>
+Notice that the output isn't very readable, since the program
+generates symbols as numbers.  We can take that output, though, and
+run it through the <strong>ints2words.pl</strong> program to replace
+the numbers with the corresponding words:
+  <PRE>
+    %  genseq example0.hmm 100 | ints2words.pl example0.key
+  </PRE>
+<P>
+</OL>
+
+
+<HR>
+<H2>Finding the Hidden State Sequence for a Test Sentence</H2>
+
+<OL>
+
+<LI> Let's create a sentence to use as input to the model.  First,
+create a file <strong>example0.test.words</strong> containing the word
+sequence that you got when you ran through the model state by state by
+hand, above.  You can do this using an editor, or you can do it by
+typing
+  <PRE>
+    %  cat > example0.test.words
+  </PRE>
+then typing the sentence in, hitting return, and then typing
+control-D. Don't forget to make sure everything is lowercase, and make
+sure the punctuation mark is a separate word, not attached to the last
+word of the sentence.
+<P>
+
+<LI> Turn the file you've just created into the right format for the 
+HMM programs, by running <strong>words2seq.pl</strong> program as follows:
+  <PRE>
+    %  words2seq.pl example0.key < example0.test.words > example0.test
+  </PRE>
+If you're interested, take a look at file example0.test to see
+what the input sequence looks like.
+<P>
+
+<LI> Find the sequence of hidden states most likely to have generated
+the symbol sequence in example0.test, by using the
+<strong>testvit</strong> program:
+  <PRE>
+    %  testvit example0.hmm example0.test
+  </PRE>
+The program reports the probability of the symbol sequence, given the
+most likely sequence of states, and it also reports the optimal state
+sequence.
+<P>
+
+<LI> Take that optimal state sequence, and replace each state number
+with the part-of-speech label you assigned to that state.  
+<P>
+
+<LI> Congratulations!  You've just done some HMM-based part-of-speech
+tagging.  Does the sequence of parts of speech correspond to what you
+expected? Include your answer, the sentence, the optimal state
+sequence, and corresponding part of speech tag sequence in your
+report.
+<P>
+</OL>
+
+<HR>
+<H2>Time for Fun</H2>
+
+Now that you've gone through this exercise, here are some suggestions
+for further exploration:
+<OL>
+<LI>  Try getting the state sequence (part-of-speech tags) for some
+more sentences -- you can look at example0.key to see what words
+you're allowed to use.  To speed things up, you can skip the step of
+creating example0.test.words by executing:
+<PRE>
+  %  cat | words2seq.pl example0.key > example0.testA
+</PRE>
+Typing your sentence in, hitting return, and then typing control-D to
+end and create file example0.testA.  (You can use suffixes testA,
+testB, etc. for new sentences.)  As before, don't forget to make sure
+everything is lowercase, and make sure punctuation are separated from
+other words by spaces.  Once you've created example0.testA, run the
+<strong>testvit</strong> program on that file, as described above.
+<P>
+
+<LI> Go back to "Training the HMM", but this time increase the number
+of states to 7 or 8 or 9.  Go through the rest of the exercise of
+labeling the resulting states with part-of-speech tags.  Include your
+answers to following questions in your report: What does the model do
+when it has more states to play with, for this training set?  What do
+you think are some possible consequences of having more states, in
+terms of the model's ability to tag accurately, and in terms of the
+linguistic facts the model captures?
+<P>
+
+<LI> Go back to "Training the HMM", but this time decrease the number
+of states to, say, 3 or 4.  Same questions as in the previous
+paragraph: what are the consequences? Include your answers in your report.<P>
+
+<LI> Let's look at some more interesting data, using a more
+interesting English-like language.  Go into the
+<strong>example1</strong> directory:
+  <PRE>
+  %  cd ../example1
+  </PRE>
+Now do the following:
+<P>
+  <OL>
+    <LI> Run the <strong>link</strong> program as described earlier.  This
+    time, though, you <em>won't</em> do the "Creating the Training Data"
+    or "Training the HMM" steps, because the training would take too long.
+    (Could be a few hours, depending on the machine.)  Instead, go
+    straight to "Inspecting the Model".  Notice that this is a bigger HMM
+    with a richer language:  there are 36 symbols in the vocabulary, and
+    the HMM has 12 states.
+    <P>
+    <LI> Do some of the same steps as we did for example0, particularly
+    assigning a part-of-speech label by hand to each state, and generating 
+    some text at random using the <strong>genseq.pl</strong> program.
+    <P>
+    <LI> Look at the file example1.train, and see if you can come up
+    with a context-free grammar that generates this language, or 
+    something close to it.  (If you want to cheat, look at file
+    gen.lisp in your hmm directory.)
+    <P>
+    <LI> Looking at the random text you generated using the 
+    <strong>genseq.pl</strong> program, do you see some sentences
+    that could not have been generated by the context-free grammar?
+    Why do those sentences get generated by the HMM but not the CFG?
+    Include your answer in your report.
+    <P>
+  </OL>
+</OL>
+
+
+<P>
+<HR>
+
+Congratulations, you are done with this exercise.
+
+</BODY>
+</HTML>

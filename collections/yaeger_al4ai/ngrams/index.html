@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Bigram Counts and Association Statistics</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<HR>
+<H1>Bigram Counts and Association Statistics</H1>
+<HR>
+
+<P>
+<strong>Description:</strong>
+In this exercise, we apply basic counts and some association
+statistics to a small corpus.  We will: 
+
+<UL>
+<LI>Count unigrams
+<LI>Count bigrams
+<LI>Compute mutual information for bigrams
+<LI>Compute likelihood ratios for bigrams
+</UL>
+
+<strong>Credits:</strong> The scripts used in this exercise were
+adapted from scripts written
+by <A HREF="http://umiacs.umd.edu/~resnik/">Philip Resnik</A>,
+which were derived from Ken Church's "NGRAMS" tutorial at ACL-1995.  The
+likelihood ratio code was adapted from code written by Ted Dunning.
+<P>
+
+<strong>Prerequisites:</strong> This exercise assumes basic
+familiarity with typical Unix commands, and the ability to create text
+files (e.g. using a text editor such as <em>vi</em> or
+<em>emacs</em>). No programming is required.  <P>
+
+<strong>Notational Convention:</strong> The symbols &lt;== will be used to
+identify a comment from the instructor, on lines where you're typing
+something in. So, for example, in
+
+  <PRE>    
+    %  cp file1.txt file2.txt   <== The "cp" is short for "copy"
+  </PRE>
+
+<P>what you're supposed to type at the prompt (identified by the percent
+sign, here) is 
+
+  <PRE>
+    cp file1.txt file2.txt
+  </PRE>
+followed by a carriage return.
+<P>
+<HR>
+
+<H2>Getting the code</H2>
+
+<P>Download the ngrams.tgz compressed tar file by clicking on
+<a href="ngrams.tgz">this link</a>.  Then move the ngrams.tgz file
+to a suitable location, such as ~/src.
+
+<P>If you need to create ~/src, you can do so by typing:
+<PRE>
+  % cd
+  % mkdir src
+</PRE>
+
+<P>From a unix command line, navigate to where you have placed the ngrams.tgz
+file and type the following:
+
+<PRE>
+  % tar xvzf ngrams.tgz                             <== Extract code from the file
+  % cd ngrams                                       <== Move into the new ngrams subdirectory
+  % chmod u+x *.pl                                  <== Make perl scripts executable
+  % cc -o lr_simple lr_simple.c -lm                 <== Compile the lr_simple program
+  % cc -o filter_stopwords filter_stopwords.c -lm   <== Compile the filter_stopwords program
+</PRE>
+
+This will create an <strong>ngrams</strong> folder containing all the
+tools and data you will need.
+
+<P>
+
+
+<HR>
+<H2>Generating Statistics for a Corpus</H2>
+
+<OL>
+<LI> Take a look at file <strong>corpora/GEN.EN</strong>.  You can do
+this as follows:
+<PRE>
+  %  more corpora/GEN.EN
+</PRE>
+(Type spacebar for more pages, and "q" for "quit".)  This contains an
+annotated version of the book of Genesis, King James version.  It is a
+small corpus, by current standards -- somewhere on the order of 40,000
+words.  What words (unigrams) would you expect to have high
+frequency in this corpus?  What bigrams do you think might be
+frequent?
+<P>
+
+<LI> Create a subdirectory called genesis to contain the files with
+statistics generated from this corpus:
+<PRE>
+  %  mkdir genesis
+</PRE>
+<P>
+Then run the <strong>Stats</strong> program to analyze the corpus.
+The program requires an input file, and a "prefix" to be used in
+creating output files.  The input file will be
+<strong>corpora/GEN.EN</strong>, and the prefix will be
+<strong>genesis/out</strong>, so that output files will be created in
+the genesis subdirectory.  That is, you should execute the following:
+<PRE>
+  %  Stats corpora/GEN.EN genesis/out
+</PRE>
+The program will tell you what it's doing, as it counts unigrams,
+counts bigrams, computes mutual information, and computes likelihood
+ratio statistics.  Depending on the machine you're working on, this
+may take differing amounts of time to run, but it should be less than
+a minute (probably less than half that).
+<P>
+Note:  The program will remove all the <*> annotations at the beginnings
+of the lines in the text before gathering statistics.
+
+<P>
+<LI>  You
+should now have a subdirectory called <strong>genesis</strong>
+containing a bunch of files that begin with <strong>out</strong>.
+<P>
+</OL>
+
+<HR>
+<H2>Examining Unigram and Bigram Counts</H2>
+
+<OL>
+<LI> Go into directory <strong>genesis</strong>.
+<PRE>
+  %  cd genesis
+</PRE>
+<P>
+
+<LI> Look at file <strong>out.unigrams</strong>:
+<PRE>
+  %  more out.unigrams
+</PRE>
+Seeing the vocabulary in alphabetical order isn't very useful, so
+let's sort the file by the unigram frequency, from highest to lowest:
+<PRE>
+  %  sort -nr out.unigrams > out.unigrams.sorted
+  %  more out.unigrams.sorted
+</PRE>
+Now examine out.unigrams.sorted.  Are the high frequency words what you would expect?
+<P>
+
+<LI> Analogously, look at the bigram counts <strong>out.bigrams</strong>:
+<PRE>
+  %  sort -nr out.bigrams > out.bigrams.sorted
+  %  more out.bigrams.sorted
+</PRE>
+Markup aside, again, are the high frequency bigrams what you would
+expect?
+<P>
+</OL>
+
+<HR>
+<H2>Getting Quantitative with Mutual Information</H2>
+
+<OL>
+<LI> Now let's look at mutual information.  File
+<strong>out.mi</strong> contains bigrams sorted by mutual information
+value.  Each line contains:
+<P>
+  <OL>
+  <LI> I(wordX,wordY)
+  <LI> freq(wordX)
+  <LI> freq(wordY)
+  <LI> freq(wordX,wordY)
+  <LI> wordX
+  <LI> wordY
+  </OL>
+<P>
+Low-frequency bigrams (bigram count less than 5) were excluded.
+<P>
+As an exercise, compute mutual information by hand for the first
+bigram on the list, "savoury meat".  Recall that
+<PRE>
+   I(x,y)  =  log2 [p(x,y)/(p(x)p(y))]
+</PRE>
+and that the simplest estimates of probabilities, the maximum
+likelihood estimates, are given by
+<PRE>
+  p(x)   = freq(x)/N
+  p(y)   = freq(y)/N
+  p(x,y) = freq(x,y)/N
+</PRE>
+where N is the number of observed words in the corpus, 38516.
+(You can get this by counting the words in file
+<strong>out.words</strong>; it's also what you get by summing the
+frequencies in either <strong>out.unigrams</strong> or
+<strong>out.bigrams</strong>.) 
+<P>
+Using a standard scientific calculator on your system (one that has
+logarithms and scientific notation), here is a sequence you can use
+to do the calculation:
+<PRE>
+  Compute p(savoury)         = freq(savoury)/N
+  Compute p(meat)            = freq(meat)/N
+  Compute p(savoury meat)    = freq(savoury,meat)/N
+  Compute p(savoury)p(meat)  = p(savoury) * p(meat)
+  Divide p(savoury,meat) by this value
+  Take the log of the result (which in xcalc is log to the base 10)
+  Convert that result to log base-2 by dividing by 0.30103 
+    This uses the fact that for all M, N: logM(x) = logN(x)/logN(M).
+</PRE>
+At some point, the calculator may give you scientific notation for a
+number.  If you need to <em>enter</em> a number in scientific
+notation, you use EE:
+<PRE>
+   EE         Used for entering exponential numbers.  For example
+              to get "-2.3E-4" you'd enter "2 . 3 +/- EE 4 +/-".   
+</PRE>
+The number you some up with should be close to the mutual information
+reported in <strong>out.mi</strong>.  It may be slightly different
+because your calculation used different precision than the program's.
+<P>
+
+<LI> As you've just seen, probabilities can be very low numbers.  All
+the more so when using n-grams for n=3 or above!  Underflow can be a
+problem in these sorts of calculations: when the probabilities are too
+low, they exceed the representational capacity of the computer.  For
+this reason it's very common to do such calculations using the logs of
+the probability values (often called "log probabilities" or
+"logprobs"), using the following handy identities:
+<PRE>
+  log(a * b) = log(a) + log(b)
+  log(a / b) = log(a) - log(b)
+</PRE>
+Try converting the formula for mutual information using these
+identities so that probabilities are never multiplied or divided,
+before reading further.
+<P>
+<strong>Solution:</strong> 
+ log[p(x,y)/p(x)p(y)]  = log p(x,y) - log p(x) + log p(y)
+<P>
+To really get a feel for things, first rewrite this in terms
+of frequencies and <em>then</em> convert to using log
+probabilities, i.e.
+<P>
+ log[ (freq(x,y)/N)/(freq(x)/N)(freq(y)/N) ] 
+<P>
+</OL>
+
+<HR>
+<H2>Examining the Results</H2>
+
+<OL>
+<LI> Look at <strong>out.mi</strong> and the bigrams selected by
+mutual information as being strongly associated.  What do you think of
+them?  Notice how very many of them are low-frequency bigrams: it's
+well known that mutual information has overly high values for bigrams
+of low frequency, i.e. it reports word pairs as associated when they
+probably are not really that strongly associated after all.
+<P>
+
+<LI> Compare this to <strong>out.lr</strong>, where the leftmost column
+is the likelihood ratio.  There are a lot of common words of English
+in there, so try filtering those out using the
+<strong>filter_stopwords</strong> program.  First, access the program
+so it's easy to run in this directory:
+<PRE>
+  %  ln -s ../filter_stopwords      <== Creates a symbolic link
+  %  ln -s ../stop.wrd              <== Creates a symbolic link
+</PRE>
+Then run it:
+<PRE>
+  %  filter_stopwords stop.wrd < out.lr > out.lr.filtered
+</PRE>
+<P>
+How does <strong>out.lr.filtered</strong> look as a file containing
+bigrams that are characteristic of this corpus?
+<P>
+</OL>
+
+
+<HR>
+<H2>Time for Fun</H2>
+
+<OL>
+<LI> One thing you may have noticed is that there's more data
+sparseness because uppercase and lowercase are distinct, e.g. "Door"
+is treated as a different word from "door".  In the corpora directory,
+you can create an all- lowercase version of GEN.EN by doing this:
+<PRE>
+  %   cat GEN.EN | tr "A-Z" "a-z" > GEN.EN.lc
+</PRE>
+
+Try re-doing the exercise with this version.  What, if anything, changes?
+<P>
+
+<LI> Ok, perhaps that last one wasn't exactly fun.  But this probably
+will be.  Download one (or more) of these three Sherlock Holmes stories:<br>
+<br>
+<a href="ebooks/study.dyl"><em>A Study in Scarlet</em></a><br>
+<a href="ebooks/hound.dyl"><em>The Hound of the Baskervilles</em></a><br>
+<a href="ebooks/adventures.dyl"><em>Adventures of Sherlock Holmes</em></a><br>
+<br>
+(The last of which contains 12 different stories.)
+
+Then place it (them) in your <strong>corpora</strong> subdirectory.
+
+<P>
+Now get back into your <strong>ngrams</strong> directory, create an
+output directory, say, <strong>holmes1</strong>, and run the
+<strong>Stats</strong> program for the file of interest, e.g.:
+<PRE>
+  %   cd ..
+  %   mkdir holmes1
+  %   Stats corpora/study.dyl holmes1/out
+  %   cd holmes1
+</PRE>
+<P>
+Or perhaps convert to lowercase before running <strong>Stats</strong>:
+<PRE>
+  %   cd corpora
+  %   cat study.dyl | tr "A-Z" "a-z" > study.lc
+  %   cat hound.dyl | tr "A-Z" "a-z" > hound.lc
+  %   cat adventures.dyl | tr "A-Z" "a-z" > adventures.lc
+  %   cd ..
+  %   mkdir holmes1
+  %   Stats corpora/study.lc holmes1/out
+  %   cd holmes1
+</PRE>
+<P>
+Look at <strong>out.lr</strong>, etc. for this corpus.  Now go through
+the same process again, but creating a directory
+<strong>holmes2</strong> and using a different file.  Same author,
+same main character, same genre... how do the high-association bigrams
+compare between the two cases? If you use filter_stopwords, how do the
+results look -- what kinds of bigrams are you getting?  What natural
+language processing problems might this be useful for?
+</OL>
+
+<P>
+<HR>
+
+
+</BODY>
+</HTML>

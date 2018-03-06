@@ -1,0 +1,42 @@
+Matt Whitehead
+Info-590
+Genetic Algorithm Presentation Code
+
+
+This is genetic algorithm code used for my presentation in Info-590 in Fall 2005.
+
+
+GA.py, Chromosome.py, and Population.py hold the bulk of the actual GA code.  Different applications are created by following the templates in Int_GA.py, Music_GA.py, and TS_GA.py.
+
+
+
+Int_GA.py
+
+USAGE:
+python Int_GA.py [max|min|odd]
+
+A first simple test of the GA code.  Given lists of 10 integers, find the list with the highest sum, the lowest sum, or the greatest number of odd integers.
+
+
+
+Music_GA.py
+
+USAGE:
+python Music_GA.py [key|scale] [score|midi]
+
+Produce chromosomes that are either all in a particular key or are close to neighboring notes in pitch.  Then produce either a .pdf score (using Lilypond) or play a midi rendition of the song out loud (using Timidity).
+
+
+
+
+
+
+TS_GA.py
+
+Not really working.  I started setting up a GA to solve the Traveling Salesman Problem.
+
+
+
+Prog_GA.py
+
+Not really working.  This is the start of some genetic programming code.

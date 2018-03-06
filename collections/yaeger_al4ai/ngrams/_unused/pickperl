@@ -1,0 +1,30 @@
+#!/bin/csh
+
+#
+#  Simple script for changing what version of perl is used
+#  by perl scripts.   Assumes perl scripts end with .pl suffix.
+#  Example (executed in directory containing scripts):
+#
+#    pickperl /usr/imports/bin/perl5 /usr/local/bin/perl5
+#
+#  Another example
+#
+#    pickperl /usr/local/bin/perl5 /usr/local/bin/perl5.004
+#
+#
+
+set TEMPFILE=/tmp/tempfile.$$
+
+if ($2 == "" || $3 != "") then
+  echo "Usage: pickperl original-perl replacement-perl"
+else
+
+  foreach x (`ls *.pl`)
+    echo "Fixing perl executable for $x"
+    /bin/rm -f $TEMPFILE
+    cat $x | sed -e "s@$1@$2@" > $TEMPFILE
+    /bin/mv $TEMPFILE $x
+  end
+  echo "Done."
+
+endif
