@@ -7,3 +7,9 @@ Lecture slides, exercises, assessments, exam questions for teachers and students
 
 **exercises** contains exercises that can be used for experience-based
   learning (and in some cases assessment).
+
+# instructions
+
+When adding new materials, please include a README.md at the base of
+the newly added folder. For instance, there should be one at
+/collections/dipaolo-adaptive-systems/README.md
