@@ -1,5 +1,10 @@
 # artificial-life-teaching-materials
-Lecture slides, exercises, assessments, exam questions for teachers and students of Artificial Life.
+
+This repository is for lecture slides, exercises, assessments, exam
+questions for teachers and students of Artificial Life.
+
+The structure of the repo is expected to adapt over time, but we will
+start with the following simple structure:
 
 **collections** contains materials for running entire courses. So far,
   these include a set of lecture slides. In the future, we may try to
