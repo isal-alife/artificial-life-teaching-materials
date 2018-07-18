@@ -1,7 +1,9 @@
 # artificial-life-teaching-materials
 
 This repository is for lecture slides, exercises, assessments, exam
-questions for teachers and students of Artificial Life.
+questions for teachers and students of Artificial Life. All
+contents of this repository are UNLICENSED -- they are available to be
+used for essentially any purpose as described in the LICENSE.md file.
 
 The structure of the repo is expected to adapt over time, but we will
 start with the following simple structure:
