@@ -1,22 +1,14 @@
-# artificial-life-teaching-materials
+Artificial Life (+ swarm robotics & embodied evolution) - solving problems by looking at nature
 
-This repository is for lecture slides, exercises, assessments, exam
-questions for teachers and students of Artificial Life. All
-contents of this repository are UNLICENSED -- they are available to be
-used for essentially any purpose as described in the LICENSE.md file.
+Support slides of the talk at the School of Computer Science of the University of Valladolid, Spain on September 19th 2018, to open the series of weekly invited seminars -- Iñaki Fernández Pérez, University of Toulouse, Vice Chair Emergent Researchers in ALife (ERA) -- the student and postdoc group of the International Society for Artificial Life (ISAL)
 
-The structure of the repo is expected to adapt over time, but we will
-start with the following simple structure:
+The slides are provided as they are (except for the following quick description), although questions and clarification requests are welcome.
 
-**collections** contains materials for running entire courses. So far,
-  these include a set of lecture slides. In the future, we may try to
-  separate out the lecture slides from the labwork/practical exercises.
+fernandezperez.inaki@gmail.com
+Twitter: @InakiFdezPerez
 
-**exercises** contains exercises that can be used for experience-based
-  learning (and in some cases assessment).
+This is a talk on Artificial Life aimed at a non-specialist audience that takes a bottom-up approach to present a personal take on ALife, mostly leaning on the bioinspired engineering side: starting with illustrative relevant examples of patterns and self-organization in nature. Then, a set of recent and diverse examples of work in ALife are shown (both videos and pictures). The topics of swarm robotics and embodied evolutionary robotics are then introduced, and I quickly introduce two of my contributions to that subject. Finally, I discuss several different views on Artificial Life as a field, and present a personal one (from the point of view of common methodologies used in ALife).
 
-# instructions
+The video of the original talk is available at the CS School website here (in Spanish): https://www.inf.uva.es/2018/09/11/vida-artificial-robotica-en-enjambre-y-evolucion-encarnada-resolver-problemas-imitando-la-naturaleza/
 
-When adding new materials, please include a README.md at the base of
-the newly added folder. For instance, there should be one at
-/collections/dipaolo-adaptive-systems/README.md
+Both the original slides in Spanish and the translated English version are available, in pdf (without videos) and Libreoffice Impress .odp format, with the videos that need to remain in the same folder as the slides. The videos are either publicly available videos, or videos provided by their authors. In all the cases, the corresponding works are properly cited. If any of the authors of these videos  has any conflict, please contact me (fernandezperez.inaki@gmail.com).
