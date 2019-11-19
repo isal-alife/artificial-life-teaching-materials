@@ -15,8 +15,10 @@ start with the following simple structure:
 **exercises** contains exercises that can be used for experience-based
 learning (and in some cases assessment).
 
-In addition, here are some links to other websites, repositories etc., that you
-may find useful when teaching ALIFE related topics.
+# Other websites and git-hub repositories
+
+Listed below are links to other websites, repositories etc., that you may find
+useful when teaching ALIFE related topics.
 
 - https://github.com/IsaacLab/LaboratorioIntangible Materials from a Summer
   School Workshop on Cognition. Contains _Python_ and _Processing_ projects on
