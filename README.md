@@ -13,7 +13,19 @@ start with the following simple structure:
   separate out the lecture slides from the labwork/practical exercises.
 
 **exercises** contains exercises that can be used for experience-based
-  learning (and in some cases assessment).
+learning (and in some cases assessment).
+
+In addition, here are some links to other websites, repositories etc., that you
+may find useful when teaching ALIFE related topics.
+
+- https://github.com/IsaacLab/LaboratorioIntangible Materials from a Summer
+  School Workshop on Cognition. Contains _Python_ and _Processing_ projects on
+  emergence, self-organization, evolution, criticality, and network
+  dynamics. Instructions are in Spanish.
+
+- http://mypage.iu.edu/~rdbeer/#software Randy Beer's relased software,
+  including a C++ implementation of Continuous-Time Recurrent Neural Networks
+  (CTRNN) and an evolutionary algorithm (TSearch)
 
 # instructions
 
